@@ -80,7 +80,9 @@ namespace S7CommPlusDriver
 					try
 					{
 						CreateSocket();
-						TCPSocket.Connect(Host, Port);
+                        //TCPSocket.Connect(Host, Port);
+						IAsyncResult connResult = TCPSocket.BeginConnect(Host, Port, null, null);
+						connResult.AsyncWaitHandle.WaitOne(3000, true);  //等待3秒
 					}
 					catch
 					{

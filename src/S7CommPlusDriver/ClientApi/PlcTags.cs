@@ -10,6 +10,11 @@ namespace S7CommPlusDriver.ClientApi
     {
         List<PlcTag> m_Tags = new List<PlcTag>();
 
+        public List<PlcTag> Tags()
+        {
+            return m_Tags;
+        }
+
         public void AddTag(PlcTag tag)
         {
             m_Tags.Add(tag);
@@ -42,6 +47,28 @@ namespace S7CommPlusDriver.ClientApi
             }
             return res;
         }
+
+        public int ReadTags(S7CommPlusConnection conn, List<ItemAddress> readlist)
+        {
+            List<object> values;
+            List<UInt64> errors;
+
+            int res = conn.ReadValues(readlist, out values, out errors);
+
+            if (res == 0)
+            {
+                for (int i = 0; i < readlist.Count; i++)
+                {
+                    m_Tags[i].ProcessReadResult(values[i], errors[i]);
+                }
+            }
+            else
+            {
+                Console.WriteLine("ReadTags: Error res=" + res);
+            }
+            return res;
+        }
+
 
         public int WriteTags(S7CommPlusConnection conn)
         {

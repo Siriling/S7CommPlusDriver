@@ -106,8 +106,15 @@ namespace S7CommPlusDriver
 		// in eine Wireshark Aufzeichnung eingefügt werden um dort die TLS Kommunikation zu entschlüsseln.
 		public void SSL_CTX_keylog_cb(IntPtr ssl, string line)
 		{
-			string filename = "key_" + m_DateTimeStarted.ToString("yyyyMMdd_HHmmss") + ".log";
-			StreamWriter file = new StreamWriter(filename, append: true);
+            return;
+            string filename = "key_" + m_DateTimeStarted.ToString("yyyyMMdd_HHmmss") + ".log";
+            string fileDir = "log";
+            if (!Directory.Exists(fileDir))
+            {
+                Directory.CreateDirectory(fileDir);
+            }
+            string filePath = fileDir + @"\" + filename;
+            StreamWriter file = new StreamWriter(filePath, append: true);
 			file.WriteLine(line);
 			file.Close();
 		}
@@ -443,7 +450,7 @@ namespace S7CommPlusDriver
 		public int Disconnect()
 		{
 			m_runThread_DoStop = true;
-			m_runThread?.Join();
+			m_runThread?.Join(10);
 
 			Socket.Close();
 			

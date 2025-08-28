@@ -28,6 +28,7 @@ namespace S7CommPlusGUIBrowser
             {
                 tbPassword.Text = args[2];
             }
+            tbIpAddress.Text = "10.25.2.13";
         }
 
         private void setStatus(string status)

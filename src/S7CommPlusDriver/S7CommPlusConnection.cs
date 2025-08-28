@@ -1524,6 +1524,19 @@ namespace S7CommPlusDriver
             }
             return 0;
         }
+
+        //获取最后的错误
+        public string GetLastError()
+        {
+            return m_client.ErrorText(m_client.LastError());
+        }
+
+        //获取错误信息
+        public string ErrorText(int error)
+        {
+            return m_client.ErrorText(error);
+        }
+
+        #endregion
     }
-    #endregion
 }

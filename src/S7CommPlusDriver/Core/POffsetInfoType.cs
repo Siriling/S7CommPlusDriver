@@ -37,6 +37,18 @@ namespace S7CommPlusDriver
         UInt32 GetArrayElementCount();
     }
 
+    public interface IOffsetInfoType_StructMDim
+    {
+        UInt32 GetNonoptimizedStructSize();
+        UInt32 GetOptimizedStructSize();
+    }
+
+    public interface IOffsetInfoType_Struct1Dim
+    {
+        UInt32 GetNonoptimizedStructSize();
+        UInt32 GetOptimizedStructSize();
+    }
+
     public abstract class POffsetInfoType
     {
         // Offsetinfo type for tag description.
@@ -65,6 +77,8 @@ namespace S7CommPlusDriver
         public abstract bool HasRelation();
         public abstract bool Is1Dim();
         public abstract bool IsMDim();
+        public abstract UInt32 GetOptimizedAddress();
+        public abstract UInt32 GetNonoptimizedAddress();
 
         public static POffsetInfoType Deserialize(Stream buffer, int offsetinfotype, out int length)
         {
@@ -118,6 +132,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return true; }
         public override bool Is1Dim() { return false; }
         public override bool IsMDim() { return false; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_FbSfb Deserialize(Stream buffer, out int length)
         {
@@ -172,7 +188,7 @@ namespace S7CommPlusDriver
         }
     }
 
-    public class POffsetInfoType_StructMDim : POffsetInfoType, IOffsetInfoType_Relation, IOffsetInfoType_MDim
+    public class POffsetInfoType_StructMDim : POffsetInfoType, IOffsetInfoType_Relation, IOffsetInfoType_MDim, IOffsetInfoType_StructMDim
     {
         public UInt16 UnspecifiedOffsetinfo1;
         public UInt16 UnspecifiedOffsetinfo2;
@@ -193,6 +209,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return true; }
         public override bool Is1Dim() { return false; }
         public override bool IsMDim() { return true; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_StructMDim Deserialize(Stream buffer, out int length)
         {
@@ -290,9 +308,17 @@ namespace S7CommPlusDriver
         {
             return MdimArrayElementCount;
         }
+        public UInt32 GetNonoptimizedStructSize()
+        {
+            return NonoptimizedStructSize;
+        }
+        public UInt32 GetOptimizedStructSize()
+        {
+            return OptimizedStructSize;
+        }
     }
 
-    public class POffsetInfoType_Struct1Dim : POffsetInfoType, IOffsetInfoType_Relation, IOffsetInfoType_1Dim
+    public class POffsetInfoType_Struct1Dim : POffsetInfoType, IOffsetInfoType_Relation, IOffsetInfoType_1Dim, IOffsetInfoType_Struct1Dim
     {
         public UInt16 UnspecifiedOffsetinfo1;
         public UInt16 UnspecifiedOffsetinfo2;
@@ -311,6 +337,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return true; }
         public override bool Is1Dim() { return true; }
         public override bool IsMDim() { return false; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_Struct1Dim Deserialize(Stream buffer, out int length)
         {
@@ -381,6 +409,16 @@ namespace S7CommPlusDriver
         {
             return ArrayElementCount;
         }
+
+        public UInt32 GetNonoptimizedStructSize()
+        {
+            return NonoptimizedStructSize;
+        }
+
+        public UInt32 GetOptimizedStructSize()
+        {
+            return OptimizedStructSize;
+        }
     }
 
     public class POffsetInfoType_Struct : POffsetInfoType, IOffsetInfoType_Relation
@@ -398,6 +436,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return true; }
         public override bool Is1Dim() { return false; }
         public override bool IsMDim() { return false; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_Struct Deserialize(Stream buffer, out int length)
         {
@@ -462,6 +502,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return false; }
         public override bool Is1Dim() { return false; }
         public override bool IsMDim() { return true; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_ArrayMDim Deserialize(Stream buffer, out int length)
         {
@@ -551,6 +593,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return false; }
         public override bool Is1Dim() { return true; }
         public override bool IsMDim() { return false; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_Array1Dim Deserialize(Stream buffer, out int length)
         {
@@ -610,6 +654,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return false; }
         public override bool Is1Dim() { return false; }
         public override bool IsMDim() { return false; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_String Deserialize(Stream buffer, out int length)
         {
@@ -651,6 +697,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return false; }
         public override bool Is1Dim() { return false; }
         public override bool IsMDim() { return false; }
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_Std Deserialize(Stream buffer, out int length, int offsetinfotype)
         {
@@ -713,6 +761,8 @@ namespace S7CommPlusDriver
         public override bool HasRelation() { return true; }
         public override bool Is1Dim() { return false; } //!!! TODO
         public override bool IsMDim() { return false; } //!!! TODO
+        public override UInt32 GetOptimizedAddress() { return OptimizedAddress; }
+        public override UInt32 GetNonoptimizedAddress() { return NonoptimizedAddress; }
 
         public static POffsetInfoType_FbArray Deserialize(Stream buffer, out int length)
         {
