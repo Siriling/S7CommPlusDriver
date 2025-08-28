@@ -6,28 +6,16 @@ using System.Threading.Tasks;
 
 namespace S7CommPlusDriver.ClientApi
 {
-    public class PlcTags
+    public static class PlcTags
     {
-        List<PlcTag> m_Tags = new List<PlcTag>();
-
-        public List<PlcTag> Tags()
-        {
-            return m_Tags;
-        }
-
-        public void AddTag(PlcTag tag)
-        {
-            m_Tags.Add(tag);
-        }
-
-        public int ReadTags(S7CommPlusConnection conn)
+        public static int ReadTags(this S7CommPlusConnection conn, IEnumerable<PlcTag> plcTags)
         {
             var readlist = new List<ItemAddress>();
             List<object> values;
             List<UInt64> errors;
             int res;
 
-            foreach (var tag in m_Tags)
+            foreach (var tag in plcTags)
             {
                 readlist.Add(tag.Address);
             }
@@ -36,30 +24,11 @@ namespace S7CommPlusDriver.ClientApi
 
             if (res == 0)
             {
-                for (int i = 0; i < readlist.Count; i++)
+                int idx = 0;
+                foreach (var tag in plcTags)
                 {
-                    m_Tags[i].ProcessReadResult(values[i], errors[i]);
-                }
-            } 
-            else
-            {
-                Console.WriteLine("ReadTags: Error res=" + res);
-            }
-            return res;
-        }
-
-        public int ReadTags(S7CommPlusConnection conn, List<ItemAddress> readlist)
-        {
-            List<object> values;
-            List<UInt64> errors;
-
-            int res = conn.ReadValues(readlist, out values, out errors);
-
-            if (res == 0)
-            {
-                for (int i = 0; i < readlist.Count; i++)
-                {
-                    m_Tags[i].ProcessReadResult(values[i], errors[i]);
+                    tag.ProcessReadResult(values[idx], errors[idx]);
+                    idx++;
                 }
             }
             else
@@ -69,15 +38,14 @@ namespace S7CommPlusDriver.ClientApi
             return res;
         }
 
-
-        public int WriteTags(S7CommPlusConnection conn)
+        public static int WriteTags(this S7CommPlusConnection conn, IEnumerable<PlcTag> plcTags)
         {
             var writelist = new List<ItemAddress>();
             var values = new List<PValue>();
             List<UInt64> errors;
             int res;
 
-            foreach (var tag in m_Tags)
+            foreach (var tag in plcTags)
             {
                 writelist.Add(tag.Address);
                 values.Add(tag.GetWriteValue());
@@ -87,9 +55,11 @@ namespace S7CommPlusDriver.ClientApi
 
             if (res == 0)
             {
-                for (int i = 0; i < writelist.Count; i++)
+                int idx = 0;
+                foreach (var tag in plcTags)
                 {
-                    m_Tags[i].ProcessWriteResult(errors[i]);
+                    tag.ProcessWriteResult(errors[idx]);
+                    idx++;
                 }
             }
             else
